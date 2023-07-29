@@ -1,5 +1,5 @@
 # LuluMacOS
-Tips for using MacOS the Dell Chromebook 7310
+Tips for using MacOS on the Dell Chromebook 7310
 
 ## Table of Contents
 - [Current Status](#current-status)
