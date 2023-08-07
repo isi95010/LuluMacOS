@@ -6,7 +6,7 @@ Tips for using MacOS on the Dell Chromebook 7310
 - [Versions Tested](#versions-tested)
 - [Requirements](#requirements)
 - [Issues](#current-issues)
-- [**1. Installation**](#1-installation)
+- [**Installation**](#1-installation)
    - [Required Steps](#these-steps-are-required-for-proper-functioning)
    - [Fixing coreboot 4.2.0+](#fixing-coreboot-420)
    - [Suggested Kexts](#kexts)
