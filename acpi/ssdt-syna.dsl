@@ -1,3 +1,7 @@
+// Note:     This will NOT work without a hotpatch rename as follows: 
+// Find:     5F4349440D41
+// Replace:  584349440D41
+
 DefinitionBlock ("", "SSDT", 2, "sqrl", "snya", 0x00000000)
 {
     External (_SB_.PCI0, DeviceObj)
