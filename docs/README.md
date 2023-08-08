@@ -8,7 +8,7 @@ Tips for using MacOS on the Dell Chromebook 7310
 - [Issues](#current-issues)
 - [**Installation**](#installation)
    - [Required Steps](#these-steps-are-required-for-proper-functioning)
-   - [Coreboot 4.20.0+ CPU patch](#Working around CPU changes to Coreboot 4.20+)
+   - [Coreboot 4.20.0+ CPU patch](#Working-around-CPU-changes-to-Coreboot-4.20.0+)
    - [Suggested Kexts](#kexts)
    - [Suggested ACPI files and hotpatches](#acpi-folder)
 - [Misc. Information](#misc-information)
@@ -114,7 +114,7 @@ This document assumes you've already successfuly flashed the MrChromebox firmwar
 
 --------------------------------------------------------------------------------------------------------------------------------------------------------
 
-### Working around CPU changes to Coreboot 4.20+ 
+### Working around CPU changes to Coreboot 4.20.0+ 
 Coreboot firmware 4.20 (5/15/2023 release) has a known issue where booting macOS will hang even if you think you've created a plugin-type SSDT. To fix this, we'll use an SSDT to manually define them. Credits to [ExtremeXT](https://github.com/ExtremeXT) for the fix described in method #2, which inspired method #3 and was finally refined to method #1.
 - Method 1 Rename the CPU threads while adding CPU addressing and plugin-type with [this SSDT](https://github.com/isi95010/LuluMacOS/blob/main/acpi/ssdt-plug-4200.dsl). 
 - Method 2 [SSDT-PLUG-ALT](https://github.com/meghan06/croscorebootpatch).
