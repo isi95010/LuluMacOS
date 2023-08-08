@@ -1,5 +1,5 @@
 # LuluMacOS
-Tips for using MacOS on the Dell Chromebook 7310
+Tips for using MacOS on the Dell Chromebook 7310 (with Core i3 or i5 CPU)
 
 ## Table of Contents
 - [Current Status](#current-status)
@@ -48,8 +48,9 @@ Tips for using MacOS on the Dell Chromebook 7310
 
 This document assumes you've already successfuly flashed the MrChromebox firmware to your device. It does not cover flashing. Before you start, you'll need to have the following items to complete the process:
 
+- A Core i3 or Core i5 variant of the Dell Chromebook 7310. The Celeron version probably will _not_ work and is not covered at all.
 - An external storage device (can range from an SD card to a USB Disk / Drive) for creating the installer USB.  
-- Small philips screwdriver and "spudger" for opening the chassis to replace the tiny stock SSD (need at least a 64GB m.2 SATA) and optionally replacing the WiFi/BT card with a Broadcom-based unit. The BCM94360NG is highly recommended. 
+- Small philips screwdriver and "spudger" for opening the laptop chassis. This is to replace the tiny stock SSD (need at least a 64GB m.2 SATA) and optionally replacing the WiFi/BT card with a Broadcom-based unit. The BCM94360NG is highly recommended. 
 - Experience with MacOS
 - Experience with hackintoshes is preferable because this is even more niche than installing MacOS on a PC.
 - A USB mouse in case you have trouble with the trackpad at first
