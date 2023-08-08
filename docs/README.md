@@ -191,3 +191,4 @@ ssdt-chromebook-keys.aml
 * Credit to one8three for the original [Dell 7310 Guide](https://github.com/one8three/Hackintosh---Dell-Chromebook-13-7310)
 * Credit to [mine-man30000](https://github.com/mine-man3000/macOS-Dragonair) for the guide this is based on
 * Credit to [meghan06](https://github.com/meghan06/) for the guide that mine-man3000's is based on
+* Credit to [MrChromebox](https://github.com/MrChromebox?tab=repositories) for inadvertently making the firmware compatible with MacOS. 
