@@ -6,9 +6,9 @@ Tips for using MacOS on the Dell Chromebook 7310
 - [Versions Tested](#versions-tested)
 - [Requirements](#requirements)
 - [Issues](#current-issues)
-- [**Installation**](#1-installation)
+- [**Installation**](#installation)
    - [Required Steps](#these-steps-are-required-for-proper-functioning)
-   - [Fixing coreboot 4.2.0+](#fixing-coreboot-420)
+   - [Fixing coreboot 4.2.0+](#Working around CPU changes to Coreboot 4.20+)
    - [Suggested Kexts](#kexts)
    - [Suggested ACPI files and hotpatches](#acpi-folder)
 - [Misc. Information](#misc-information)
@@ -22,8 +22,8 @@ Tips for using MacOS on the Dell Chromebook 7310
 | Trackpad           | Working              | With `VoodooI2C.kext` and `VoodooRMI.kext` and ACPI patch.                                    | 
 | Graphics Accel.    | Working              |                                                                                               |
 | Internal Speakers  | Working              | AppleALC.kext using layout-id 3                                                               |
-| Keyboard backlight | Working              | With [`SSDT-KBBL.aml`](main/acpi/SSDT-KBBL.dsl)                                                    |           
-| Keyboard & Remaps  | Working              | See remap ACPI sample [here](main/acpi/ssdt-chromebook-keys.dsl)                                   |
+| Keyboard backlight | Working              | With [`SSDT-KBBL.aml`](https://github.com/isi95010/LuluMacOS/blob/main/acpi/SSDT-KBBL.dsl)    |           
+| Keyboard & Remaps  | Working              | See remap ACPI sample [here](https://github.com/isi95010/LuluMacOS/blob/main/acpi/ssdt-chromebook-keys.dsl)                                   |
 | SD Card Reader     | Working              | It is USB, so insert a card into the slot while USB mapping                                   |
 | Headphone Jack     | Working              | AppleALC.kext using layout-id 3                                                               |
 | HDMI Audio         | Untested             | To do                                                                                         |
@@ -58,7 +58,7 @@ This document assumes you've already successfuly flashed the MrChromebox firmwar
 >**Note**: MrChromebox coreboot 4.20 (5/15/2023 release) and higher is confirmed to cause issues with booting macOS on Chromebooks without taking specific steps. There are several methods to work around this. See "4. Fixing CPU core (thread) definition and plugin-type" below
 - Often, with the Dell 7310, booting MacOS seems to hang after IGPU initialization or somewhere around BlueTooth verbose messages. The trick is to just swipe or tap the trackpad and it should continue booting. 
 
-## 1. Installation
+## Installation
 
 --------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -76,7 +76,7 @@ This document assumes you've already successfuly flashed the MrChromebox firmwar
 2. Thoroughly read the [OpenCore Guide](https://dortania.github.io/OpenCore-Install-Guide/). Use [Laptop Broadwell](https://dortania.github.io/OpenCore-Install-Guide/config-laptop.plist/broadwell.html) when ready to set up your EFI. 
 3. Re-visit this guide when you're done setting up your EFI. There are a few things we need to tweak to ensure our Chromebook works with macOS. 
 4. Fixing CPU core (thread) definition and plugin-type as mentioned in Current Issues
-* Method 1 (recommended by isi95010): In an SSDT, set _STA to 0 on all CPU threads, and then define new CPU thread names with compatible addressing and plugin-type set. See [4-thread CPU sample SSDT](main/acpi/ssdt-plug-4200.dsl) that you can compile and use. 
+* Method 1 (recommended by isi95010): In an SSDT, set _STA to 0 on all CPU threads, and then define new CPU thread names with compatible addressing and plugin-type set. See [4-thread CPU sample SSDT](https://github.com/isi95010/LuluMacOS/blob/main/acpi/ssdt-plug-4200.dsl) that you can compile and use. 
 * Method 2 (working for other Chromebook Hackintoshers): Use SSDT-Plug-Alt.aml. This seems to work fine, but leaves "stray" CPU definitions in the IOService plane. It is unknown if this can cause issues down the line but doesn't sit right with me.
 * Method 3 (works but not recommended): This is akin to static patching a DSDT, which hackintoshers have moved away from years ago. However, Coreboot defines the CPU in its own SSDT outside of the DSDT, usually called SSDT-1.aml. We can use OpenCore to drop (delete) this OEM SSDT and inject our own, mostly identical "SSDT-1" but with corrected CPU addressing and plugin-type within said SSDT or another SSDT. I won't provide instructions to do this. 
 5. In your `config.plist`, under `Booter -> Quirks` set `ProtectMemoryRegions` to `TRUE`. It should look something like this in your `config.plist` when done correctly:
@@ -100,8 +100,8 @@ This document assumes you've already successfuly flashed the MrChromebox firmwar
      
    > **Warning** **These should be the only items `in PciRoot(0x0)/Pci(0x2,0x0)`.**
 7. **`MacBookAir7,2` works with Mojave through Monterey. Anything before or after those MacOS versions is not covered here.**. You may find a better suited SMBIOS to mimic or for unsupported future OS versions. Experiment as you wish. 
-8. You can use the standard VoodooPS2controller and VoodooPS2keyboard plugin with the [PS2 chromebook remapping SSDT sample](main/acpi/ssdt-chromebook-keys.dsl). 
-   - Keyboard backlight works with `SSDT-KBBL.aml` and can be found [here](main/acpi/SSDT-KBBL.dsl).
+8. You can use the standard VoodooPS2controller and VoodooPS2keyboard plugin with the [PS2 chromebook remapping SSDT sample](https://github.com/isi95010/LuluMacOS/blob/main/acpi/ssdt-chromebook-keys.dsl). 
+   - Keyboard backlight works with `SSDT-KBBL.aml` and can be found [here](https://github.com/isi95010/LuluMacOS/blob/main/acpi/SSDT-KBBL.dsl).
 9. You can use SSDTTime to generate a fake EC (laptop verions), HPET (IRQ conflicts) and PNLF (requred for display backlight control). Be sure to copy any resulting rename patches from `oc_patches.plist` into your `config.plist` under `ACPI -> Patch`. 
 10. Map your USB ports³ before installing using Windows. If you can't be bothered to install Windows, mapping can be done in WinPE. See [USBToolbox](https://github.com/USBToolBox). Remember you need the USBToolbox.kext *and* your generated UTBMap.kext.    
 11. Snapshot (cmd +r) or (ctrl + r) your `config.plist`. 
@@ -116,7 +116,7 @@ This document assumes you've already successfuly flashed the MrChromebox firmwar
 
 ### Working around CPU changes to Coreboot 4.20+ 
 Coreboot firmware 4.20 (5/15/2023 release) has a known issue where booting macOS will hang even if you think you've created a plugin-type SSDT. To fix this, we'll use an SSDT to manually define them. Credits to [ExtremeXT](https://github.com/ExtremeXT) for the fix described in method #2, which inspired method #3 and was finally refined to method #1.
-- Method 1 Rename the CPU threads while adding CPU addressing and plugin-type with [this SSDT](main/acpi/ssdt-plug-4200.dsl). 
+- Method 1 Rename the CPU threads while adding CPU addressing and plugin-type with [this SSDT](https://github.com/isi95010/LuluMacOS/blob/main/acpi/ssdt-plug-4200.dsl). 
 - Method 2 [SSDT-PLUG-ALT](https://github.com/meghan06/croscorebootpatch).
 - Method 3 (see ACPI>Delete patch)
 
@@ -160,8 +160,8 @@ SSDT-PNLF.aml From SSDTTime.
 ssdt-syna.aml (requires hotpatch below)
 ssdt-chromebook-keys.aml
 ```
-**Note**: Some of these SSDTs were generated with [SSDTTime](https://github.com/corpnewt/SSDTTime) and some were manually written by me for *this specific* Chromebook. See the [ACPI Sample folder](acpi) for .dsl files you can download, double check, then compile into AML.
-[ssdt-syna.aml](main/acpi/ssdt-syna.dsl) defines the _CID of the Synaptics RMI-I2C trackpad as `PNP0C50`. The original _CID in the DSDT is `ACPI0C50` so we need a hotpatch to rename _CID to XCID. This allows the new _CID in ssdt-syna.aml to work so that VoodooRMII2C can attach to the trackpad. one8three's method involves manually editing the plist of the kext. This method seems more suitable to survive kext updates down the line when you may forget about the _CID situation with the trackpad. Credit to one8three for identifying the discrepancy in the DSDT. Here is the hotpatch to put in the ACPI/Patch section of your config.plist: 
+**Note**: Some of these SSDTs were generated with [SSDTTime](https://github.com/corpnewt/SSDTTime) and some were manually written by me for *this specific* Chromebook. See the [ACPI Sample folder](https://github.com/isi95010/LuluMacOS/tree/main/acpi) for .dsl files you can download, double check, then compile into AML.
+[ssdt-syna.aml](https://github.com/isi95010/LuluMacOS/blob/main/acpi/ssdt-syna.dsl) defines the _CID of the Synaptics RMI-I2C trackpad as `PNP0C50`. The original _CID in the DSDT is `ACPI0C50` so we need a hotpatch to rename _CID to XCID. This allows the new _CID in ssdt-syna.aml to work so that VoodooRMII2C can attach to the trackpad. one8three's method involves manually editing the plist of the kext. This method seems more suitable to survive kext updates down the line when you may forget about the _CID situation with the trackpad. Credit to one8three for identifying the discrepancy in the DSDT. Here is the hotpatch to put in the ACPI/Patch section of your config.plist: 
    | Key                  | Type   | Value              |
    | -------------------- | ------ | ------------------ |
    | Base                 | String |                    |
