@@ -26,13 +26,12 @@ Tips for using MacOS on the Dell Chromebook 7310 (with Core i3 or i5 CPU)
 | Keyboard & Remaps  | Working              | See remap ACPI sample [here](https://github.com/isi95010/LuluMacOS/blob/main/acpi/ssdt-chromebook-keys.dsl)                                   |
 | SD Card Reader     | Working              | It is USB, so insert a card into the slot while USB mapping                                   |
 | Headphone Jack     | Working              | AppleALC.kext using layout-id 3                                                               |
-| HDMI Audio         | Untested             | To do                                                                                         |
-| HDMI Video         | Working              | Working OOTB                                                                                  |
+| HDMI Audio         | Workin               |                                                                                               |
+| HDMI Video         | Working              |                                                                                               |
 | USB Ports          | Working              | Working with USB mapping                                                                      |
-| Webcam             | Working              | Working OOTB                                                                                  |
+| Webcam             | Working              |                                                                                               |
 | Internal Mic.      | Working              | AppleALC.kext using layout-id 3                                                               |
-| Logout / Lock      | Working              | Working OOTB.                                                                                 |
-| Shutdown / Restart | Working              | Working with `ProtectMemoryRegions` set to true in `config.plist`. (Chromebook moment)        |    
+| Shutdown / Restart | Working              |                                                                                               |    
 | Continuity         | Untested             | Will not work with stock Intel card. Should work with replacement BCM94360NG card             |    
 | NVRAM              | Working              | Native NVRAM working with firmware 4.20 and 4.20.1. Earlier versions may need to emulate      |
                                                                           
