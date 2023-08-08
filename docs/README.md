@@ -8,7 +8,7 @@ Tips for using MacOS on the Dell Chromebook 7310
 - [Issues](#current-issues)
 - [**Installation**](#installation)
    - [Required Steps](#these-steps-are-required-for-proper-functioning)
-   - [Fixing coreboot 4.2.0+](#Working around CPU changes to Coreboot 4.20+)
+   - [Coreboot 4.20.0+ CPU patch](#Working around CPU changes to Coreboot 4.20+)
    - [Suggested Kexts](#kexts)
    - [Suggested ACPI files and hotpatches](#acpi-folder)
 - [Misc. Information](#misc-information)
