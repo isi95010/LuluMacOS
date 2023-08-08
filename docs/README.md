@@ -62,20 +62,17 @@ This document assumes you've already successfuly flashed the MrChromebox firmwar
 
 --------------------------------------------------------------------------------------------------------------------------------------------------------
 
-> **Warning** Pay _close_ attention to the Chromebook specific parts in the Dortania guide, specifically in `Booter -> Quirks` and the iGPU `boot-args`.
-
-> **Warning** Pay _very_ close attention to the following steps, if you miss **even one**, your Chromebook will lose some functionally and might not even boot.
-> **Warning** This is an advanced project. As such, there is no tech support and the authors of this document or documents linked are not responsible for damage to your device. 
-
-
+**Warning** This is an advanced project. As such, there is no tech support and the authors of this document and authors of the documents linked are not responsible for damage to your device. 
 --------------------------------------------------------------------------------------------------------------------------------------------------------
 
 ### **These steps are **required** for proper functioning.**
 
 1. If you haven't already, flash your Chromebook with [MrChromebox's UEFI firmware](https://mrchromebox.tech) via his scripts. To complete this process, you must turn off hardware write protection using the WP screw.
-2. Thoroughly read the [OpenCore Guide](https://dortania.github.io/OpenCore-Install-Guide/). Use [Laptop Broadwell](https://dortania.github.io/OpenCore-Install-Guide/config-laptop.plist/broadwell.html) when ready to set up your EFI. 
-3. Re-visit this guide when you're done setting up your EFI. There are a few things we need to tweak to ensure our Chromebook works with macOS. 
-4. Fixing CPU core (thread) definition and plugin-type as mentioned in Current Issues
+2. Thoroughly read the [OpenCore Guide](https://dortania.github.io/OpenCore-Install-Guide/). Use [Laptop Broadwell](https://dortania.github.io/OpenCore-Install-Guide/config-laptop.plist/broadwell.html) when ready to set up your EFI. Be sure to use the Debug vesion of OpenCore initially.
+   * See [here](https://dortania.github.io/OpenCore-Install-Guide/troubleshooting/debug.html) for OpenCore debugging info
+   * Enable the SysReport quirk in order to dump your ACPI tables, especially your DSDT to run through SSDTTime to generate ***required SSDT's*** as mentioned in step 9. 
+4. Re-visit this guide when you're done setting up your EFI. There are a few things we need to tweak to ensure our Chromebook works with macOS. 
+5. Fixing CPU core (thread) definition and plugin-type as mentioned in Current Issues
 * Method 1 (recommended by isi95010): In an SSDT, set _STA to 0 on all CPU threads, and then define new CPU thread names with compatible addressing and plugin-type set. See [4-thread CPU sample SSDT](https://github.com/isi95010/LuluMacOS/blob/main/acpi/ssdt-plug-4200.dsl) that you can compile and use. 
 * Method 2 (working for other Chromebook Hackintoshers): Use SSDT-Plug-Alt.aml. This seems to work fine, but leaves "stray" CPU definitions in the IOService plane. It is unknown if this can cause issues down the line but doesn't sit right with me.
 * Method 3 (works but not recommended): This is akin to static patching a DSDT, which hackintoshers have moved away from years ago. However, Coreboot defines the CPU in its own SSDT outside of the DSDT, usually called SSDT-1.aml. We can use OpenCore to drop (delete) this OEM SSDT and inject our own, mostly identical "SSDT-1" but with corrected CPU addressing and plugin-type within said SSDT or another SSDT. I won't provide instructions to do this. 
@@ -85,7 +82,7 @@ This document assumes you've already successfuly flashed the MrChromebox firmwar
    | -------------------- | ---- | -------- |
    | ProtectMemoryRegions | Boolean | True  |
    
-   > **Warning** **This must be enabled for Chromebooks/Chromeboxes.**
+   > **Warning** **The above must be enabled for Chromebooks/Chromeboxes to boot MacOS.**
 
 6. Under `DeviceProperties -> Add -> PciRoot(0x0)/Pci(0x2,0x0)`, the following modifications are recommended to enable graphics acceleration, enable smooth LCD backlight stepping, correct the HDMI output signal type, and disable the nonexistant 3rd framebuffer: 
   
@@ -98,11 +95,11 @@ This document assumes you've already successfuly flashed the MrChromebox firmwar
    | framebuffer-portcount    | number | 2        |
    | enable-backlight-smoother| data   | 01000000 |
      
-   > **Warning** **These should be the only items `in PciRoot(0x0)/Pci(0x2,0x0)`.**
+   > **You are free to experiment with different `AAPL,ig-platform-id`'s but 06002616 works well**
 7. **`MacBookAir7,2` works with Mojave through Monterey. Anything before or after those MacOS versions is not covered here.**. You may find a better suited SMBIOS to mimic or for unsupported future OS versions. Experiment as you wish. 
-8. You can use the standard VoodooPS2controller and VoodooPS2keyboard plugin with the [PS2 chromebook remapping SSDT sample](https://github.com/isi95010/LuluMacOS/blob/main/acpi/ssdt-chromebook-keys.dsl). 
-   - Keyboard backlight works with `SSDT-KBBL.aml` and can be found [here](https://github.com/isi95010/LuluMacOS/blob/main/acpi/SSDT-KBBL.dsl).
-9. You can use SSDTTime to generate a fake EC (laptop verions), HPET (IRQ conflicts) and PNLF (requred for display backlight control). Be sure to copy any resulting rename patches from `oc_patches.plist` into your `config.plist` under `ACPI -> Patch`. 
+8. You can use the standard VoodooPS2controller and VoodooPS2keyboard plugin with the [PS2 chromebook remapping SSDT sample](https://github.com/isi95010/LuluMacOS/blob/main/acpi/ssdt-chromebook-keys.dsl). There's no need to use a fork with custom maps in the kext. 
+   - Keyboard backlight dimming works with `SSDT-KBBL.aml` and can be found [here](https://github.com/isi95010/LuluMacOS/blob/main/acpi/SSDT-KBBL.dsl). The light may or may not come back on after sleeping, but you can use the key-command to dim it back up... This is a bonus feature after all. 
+9. It's recommended to use SSDTTime to generate a fake EC (laptop verions), HPET (IRQ conflicts) and PNLF (requred for display backlight control). Be sure to copy any resulting rename patches from `oc_patches.plist` into your `config.plist` under `ACPI -> Patch`. 
 10. Map your USB ports³ before installing using Windows. If you can't be bothered to install Windows, mapping can be done in WinPE. See [USBToolbox](https://github.com/USBToolBox). Remember you need the USBToolbox.kext *and* your generated UTBMap.kext.    
 11. Snapshot (cmd +r) or (ctrl + r) your `config.plist`. 
 
