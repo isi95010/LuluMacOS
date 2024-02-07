@@ -1,6 +1,8 @@
 # LuluMacOS
 Tips for using MacOS on the Dell Chromebook 7310 (with Core i3 or i5 CPU)
 
+**A complete EFI is not provided in this repo, in accordance with "DIY" tradition. DIY: Do It Yourself. You will be better familiar with the process and will be able to troubleshoot on your own by starting with the [Dortania OpenCore Install Guide](https://dortania.github.io/OpenCore-Install-Guide/config-laptop.plist/broadwell.html). Please do not request an EFI here.**
+
 ## Table of Contents
 - [Current Status](#current-status)
 - [Versions Tested](#versions-tested)
@@ -26,7 +28,7 @@ Tips for using MacOS on the Dell Chromebook 7310 (with Core i3 or i5 CPU)
 | Keyboard & Remaps  | Working              | See remap ACPI sample [here](https://github.com/isi95010/LuluMacOS/blob/main/acpi/ssdt-chromebook-keys.dsl)                                   |
 | SD Card Reader     | Working              | It is USB, so insert a card into the slot while USB mapping                                   |
 | Headphone Jack     | Working              | AppleALC.kext using layout-id 3                                                               |
-| HDMI Audio         | Workin               |                                                                                               |
+| HDMI Audio         | Working              |                                                                                               |
 | HDMI Video         | Working              |                                                                                               |
 | USB Ports          | Working              | Working with USB mapping                                                                      |
 | Webcam             | Working              |                                                                                               |
@@ -45,7 +47,7 @@ Tips for using MacOS on the Dell Chromebook 7310 (with Core i3 or i5 CPU)
 
 ### Requirements
 
-This document assumes you've already successfuly flashed the MrChromebox firmware to your device. It does not cover flashing. Before you start, you'll need to have the following items to complete the process:
+This document assumes you've already disabled write protect and successfuly flashed the [Chromeintosh fork](https://github.com/Chromeintosh/coreboot) of MrChromebox's  Coreboot firmware to your device.
 
 - A Core i3 or Core i5 variant of the Dell Chromebook 7310. The Celeron version probably will _not_ work and is not covered at all.
 - An external storage device (can range from an SD card to a USB Disk / Drive) for creating the installer USB.  
@@ -62,21 +64,22 @@ This document assumes you've already successfuly flashed the MrChromebox firmwar
 
 --------------------------------------------------------------------------------------------------------------------------------------------------------
 
-**Warning** This is an advanced project. As such, there is no tech support and the authors of this document and authors of the documents linked are not responsible for damage to your device. 
+# ***Warning:*** This is an advanced hobbyist project. There is no tech support and the authors of this document and authors of the documents linked are not responsible for damage to your device. Any claims about functionality may be opinion and are open to challenge. We will try to keep this guide up-to-date as new information emerges, but may become outdated at any point in the future. To discuss, feel free to post in the [Chrultrabook Forums](https://forum.chrultrabook.com/c/support/macos-support) or in the Hackintosh Paradise Discord server.
 --------------------------------------------------------------------------------------------------------------------------------------------------------
 
 ### **These steps are **required** for proper functioning.**
 
-1. If you haven't already, flash your Chromebook with [MrChromebox's UEFI firmware](https://mrchromebox.tech) via his scripts. To complete this process, you must turn off hardware write protection using the WP screw.
+1. If you haven't already, use Ethan's script to flash a MacOS-optimized build of UEFI coreboot after turning off hardware write protection using the [unplug battery method](https://docs.chrultrabook.com/docs/firmware/battery.html). This version of the firmware works in other OSes too, but has optimizations for MacOS which are still compatible with Windows and Linux.
 2. Thoroughly read the [OpenCore Guide](https://dortania.github.io/OpenCore-Install-Guide/). Use [Laptop Broadwell](https://dortania.github.io/OpenCore-Install-Guide/config-laptop.plist/broadwell.html) when ready to set up your EFI. Be sure to use the Debug vesion of OpenCore initially.
    * See [here](https://dortania.github.io/OpenCore-Install-Guide/troubleshooting/debug.html) for OpenCore debugging info
    * Enable the SysReport quirk in order to dump your ACPI tables, especially your DSDT to run through SSDTTime to generate ***required SSDT's*** as mentioned in step 9. 
 4. Re-visit this guide when you're done setting up your EFI. There are a few things we need to tweak to ensure our Chromebook works with macOS. 
 5. Fixing CPU core (thread) definition and plugin-type as mentioned in Current Issues
-* Method 1 (recommended by isi95010): In an SSDT, set _STA to 0 on all CPU threads, and then define new CPU thread names with compatible addressing and plugin-type set. See [4-thread CPU sample SSDT](https://github.com/isi95010/LuluMacOS/blob/main/acpi/ssdt-plug-4200.dsl) that you can compile and use. 
-* Method 2 (working for other Chromebook Hackintoshers): Use SSDT-Plug-Alt.aml. This seems to work fine, but leaves "stray" CPU definitions in the IOService plane. It is unknown if this can cause issues down the line but doesn't sit right with me.
-* Method 3 (works but not recommended): This is akin to static patching a DSDT, which hackintoshers have moved away from years ago. However, Coreboot defines the CPU in its own SSDT outside of the DSDT, usually called SSDT-1.aml. We can use OpenCore to drop (delete) this OEM SSDT and inject our own, mostly identical "SSDT-1" but with corrected CPU addressing and plugin-type within said SSDT or another SSDT. I won't provide instructions to do this. 
-5. In your `config.plist`, under `Booter -> Quirks` set `ProtectMemoryRegions` to `TRUE`. It should look something like this in your `config.plist` when done correctly:
+* The simplest way: Flash using [Ethan's script](https://ethanthesleepy.one/macos/) instead of MrChromebox's.
+* Advanced: In an SSDT, set _STA to 0 on all CPU threads, and then define new CPU thread names with compatible addressing and plugin-type set. See [4-thread CPU sample SSDT](https://github.com/isi95010/LuluMacOS/blob/main/acpi/ssdt-plug-4200.dsl) that you can compile and use. This assumes you're using MrChromebox Rom and not from Ethan's script.
+* Advanced: (working for other Chromebook Hackintoshers): Use SSDT-Plug-Alt.aml. This seems to work fine, but leaves "stray" CPU definitions in the IOService plane. It is unknown if this can cause issues down the line but doesn't sit right with me. This assumes you're using MrChromebox Rom and not from Ethan's script.
+* Advanced (works but not recommended): This is akin to static patching a DSDT, which hackintoshers have moved away from years ago. However, Coreboot defines the CPU in its own SSDT outside of the DSDT, usually called SSDT-1.aml. We can use OpenCore to drop (delete) this OEM SSDT and inject our own, mostly identical "SSDT-1" but with corrected CPU addressing and plugin-type within said SSDT or another SSDT. I won't provide instructions to do this. This assumes you're using MrChromebox Rom and not from Ethan's script.
+6. In your `config.plist`, under `Booter -> Quirks` set `ProtectMemoryRegions` to `TRUE`. It should look something like this in your `config.plist` when done correctly:
 
    | Quirk                | Type | Value    |
    | -------------------- | ---- | -------- |
@@ -84,7 +87,7 @@ This document assumes you've already successfuly flashed the MrChromebox firmwar
    
    > **Warning** **The above must be enabled for Chromebooks/Chromeboxes to boot MacOS.**
 
-6. Under `DeviceProperties -> Add -> PciRoot(0x0)/Pci(0x2,0x0)`, the following modifications are recommended to enable graphics acceleration, enable smooth LCD backlight stepping, correct the HDMI output signal type, and disable the nonexistant 3rd framebuffer: 
+7. Under `DeviceProperties -> Add -> PciRoot(0x0)/Pci(0x2,0x0)`, the following modifications are recommended to enable graphics acceleration, enable smooth LCD backlight stepping, correct the HDMI output signal type, and disable the nonexistant 3rd framebuffer: 
   
    | Key                      | Type   | Value    |
    | --------------------     | ----   | -------- |
@@ -96,26 +99,23 @@ This document assumes you've already successfuly flashed the MrChromebox firmwar
    | enable-backlight-smoother| data   | 01000000 |
      
    > **You are free to experiment with different `AAPL,ig-platform-id`'s but 06002616 works well**
-7. **`MacBookAir7,2` works with Mojave through Monterey. Anything before or after those MacOS versions is not covered here.**. You may find a better suited SMBIOS to mimic or for unsupported future OS versions. Experiment as you wish. 
-8. You can use the standard VoodooPS2controller and VoodooPS2keyboard plugin with the [PS2 chromebook remapping SSDT sample](https://github.com/isi95010/LuluMacOS/blob/main/acpi/ssdt-chromebook-keys.dsl). There's no need to use a fork with custom maps in the kext. 
+8. **`MacBookAir7,2` works with Mojave through Monterey. Anything before or after those MacOS versions is not covered here.**. You may find a better suited SMBIOS to mimic or for unsupported future OS versions. Experiment as you wish. 
+9. You can use the standard VoodooPS2controller and VoodooPS2keyboard plugin with the [PS2 chromebook remapping SSDT sample](https://github.com/isi95010/LuluMacOS/blob/main/acpi/ssdt-chromebook-keys.dsl). There's no need to use a fork with custom maps in the kext. 
    - Keyboard backlight dimming works with `SSDT-KBBL.aml` and can be found [here](https://github.com/isi95010/LuluMacOS/blob/main/acpi/SSDT-KBBL.dsl). The light may or may not come back on after sleeping, but you can use the key-command to dim it back up... This is a bonus feature after all. 
-9. It's recommended to use SSDTTime to generate a fake EC (laptop verions), HPET (IRQ conflicts) and PNLF (requred for display backlight control). Be sure to copy any resulting rename patches from `oc_patches.plist` into your `config.plist` under `ACPI -> Patch`. 
-10. Map your USB ports³ before installing using Windows. If you can't be bothered to install Windows, mapping can be done in WinPE. See [USBToolbox](https://github.com/USBToolBox). Remember you need the USBToolbox.kext *and* your generated UTBMap.kext.    
-11. Snapshot (cmd +r) or (ctrl + r) your `config.plist`. 
+10. It's recommended to use SSDTTime to generate a fake EC (laptop verions), HPET (IRQ conflicts) and PNLF (requred for display backlight control). Be sure to copy any resulting rename patches from `oc_patches.plist` into your `config.plist` under `ACPI -> Patch`. 
+11. Map your USB ports³ before installing using Windows. If you can't be bothered to install Windows, mapping can be done in WinPE. See [USBToolbox](https://github.com/USBToolBox). Remember you need the USBToolbox.kext *and* your generated UTBMap.kext.    
+12. Snapshot (cmd +r) or (ctrl + r) your `config.plist`. 
 
     > **Warning**: Don't use "clean snapshot" (`ctrl/cmd+shift+r`) in Propertree after initially copying the sample as config.plist. This can **wipe** some work. Only do *regular* snapshots after first starting. (`ctrl/cmd+r`)
 
-12. Attempt to install the OS
+13. Attempt to install the OS
 
 > **Reminder**: In depth information about OpenCore can be found [here.](https://dortania.github.io/docs/latest/Configuration.html)
 
 --------------------------------------------------------------------------------------------------------------------------------------------------------
 
 ### Working around CPU changes to Coreboot 4.20.0+ 
-Coreboot firmware 4.20 (5/15/2023 release) has a known issue where booting macOS will hang even if you think you've created a plugin-type SSDT. To fix this, we'll use an SSDT to manually define them. Credits to [ExtremeXT](https://github.com/ExtremeXT) for the fix described in method #2, which inspired method #3 and was finally refined to method #1.
-- Method 1 Rename the CPU threads while adding CPU addressing and plugin-type with [this SSDT](https://github.com/isi95010/LuluMacOS/blob/main/acpi/ssdt-plug-4200.dsl). 
-- Method 2 [SSDT-PLUG-ALT](https://github.com/meghan06/croscorebootpatch).
-- Method 3 (see ACPI>Delete patch)
+Coreboot UEFI firmware 4.20 (5/15/2023 release) has a known issue where booting macOS will hang even if you think you've created a plugin-type SSDT. To fix this, just use [Ethan's firmware script](https://ethanthesleepy.one/macos/) and the CPU address is solved, then you can use SSDTTime like the Dortania Guide suggests (but feed it SSDT-1.aml from your SysReport).
 
 --------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -190,4 +190,7 @@ ssdt-chromebook-keys.aml
 * Credit to one8three for the original [Dell 7310 Guide](https://github.com/one8three/Hackintosh---Dell-Chromebook-13-7310)
 * Credit to [mine-man30000](https://github.com/mine-man3000/macOS-Dragonair) for the guide this is based on
 * Credit to [meghan06](https://github.com/meghan06/) for the guide that mine-man3000's is based on
-* Credit to [MrChromebox](https://github.com/MrChromebox?tab=repositories) for inadvertently making the firmware compatible with MacOS. 
+* Credit to all those who contribute to the [Chrultrabook project](https://docs.chrultrabook.com)
+* Credit to [MrChromebox](https://github.com/MrChromebox?tab=repositories) for inadvertently making the firmware compatible with MacOS.
+* Credit to ExtremeXT for forking and including the modifications for a MacOS-friendly Coreboot
+* Credit to Ethan (ethanthesleepyone) for hosting builds and the MacOS firmware script
